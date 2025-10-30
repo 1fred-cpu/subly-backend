@@ -5,6 +5,7 @@ import { RealtimeModule } from "./modules/realtime/realtime.module";
 import { ConfigModule } from "@nestjs/config";
 import { DatabaseModule } from "./database/database.module";
 import { AuthModule } from "@modules/auth/auth.module";
+import { CompaniesModule } from "@modules/companies/companies.module";
 import { EmailModule } from "@channels/email/email.module";
 @Module({
     imports: [
@@ -14,7 +15,8 @@ import { EmailModule } from "@channels/email/email.module";
         }),
         DatabaseModule,
         EmailModule,
-        AuthModule
+        AuthModule,
+        CompaniesModule
     ],
     controllers: [AppController],
     providers: [AppService]

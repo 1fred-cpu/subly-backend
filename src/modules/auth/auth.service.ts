@@ -58,12 +58,9 @@ export class AuthService {
         await queryRunner.startTransaction();
         try {
             // Check if company email already exists
-            const existingCompany = (await queryRunner.manager.findOne(
-                Company,
-                {
-                    where: { email: ownerEmail }
-                }
-            )) 
+            const existingCompany = await queryRunner.manager.findOne(Company, {
+                where: { email: ownerEmail }
+            });
 
             // If company exists, throw conflict exception
             if (existingCompany) {
@@ -84,7 +81,7 @@ export class AuthService {
             // Check an existing owner user exists
             const existingOwner = await queryRunner.manager.findOne(User, {
                 where: {
-                    email: ownerEmail,
+                    email: ownerEmail
                 }
             });
 
@@ -280,6 +277,40 @@ export class AuthService {
             throw new InternalServerErrorException("Failed to sign in user");
         } finally {
             // Release the query runner which is manually created
+            await queryRunner.release();
+        }
+    }
+    //-------------------------------
+    // Logout User
+    //-------------------------------
+    async logout(sessionId: string) {
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
+        try {
+            // Try deleting the active session
+            const result = await queryRunner.manager.delete(Session, {
+                id: sessionId,
+                active: true
+            });
+
+            // If no rows were affected, session not found or already  inactive
+            if (result.affected === 0) {
+                throw new NotFoundException("Active session cannot be found");
+            }
+
+            await queryRunner.commitTransaction();
+            return { message: "Logout successfully" };
+        } catch (error) {
+            await queryRunner.rollbackTransaction();
+
+            if (error instanceof NotFoundException) throw error;
+
+            this.logger.error(`Error logging out: ${error.stack}`);
+            throw new InternalServerErrorException("Failed to logout user");
+        } finally {
+            // Always release the query runner
             await queryRunner.release();
         }
     }
