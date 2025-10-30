@@ -34,7 +34,7 @@ export class JwtHelper {
     // ✅ Generate Access Token
     generateAccessToken(payload: object): string {
         return jwt.sign(payload, this.accessSecret, {
-            expiresIn: "15m"
+            expiresIn: "1h"
         });
     }
 

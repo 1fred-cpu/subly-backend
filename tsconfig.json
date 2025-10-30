@@ -19,7 +19,9 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@entities/*": ["./src/entities/*"],
-      "@helpers/*": ["./src/helpers/*"]
+      "@helpers/*": ["./src/helpers/*"],
+      "@modules/*": ["./src/modules/*"],
+      "@channels/*": ["./src/channels/*"]
     }
   }
 }
